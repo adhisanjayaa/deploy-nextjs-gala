@@ -23,7 +23,7 @@ export default function InputText({
           onChange={onChange}
           required={required}
           placeholder={placeholder}
-          className="w-full border-b text-4xl mt-3.5 focus:outline-none"
+          className="w-full border-b text-4xl mt-3.5 focus:outline-none capitalize"
         />
       </label>
     </div>

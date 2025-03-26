@@ -1,6 +1,6 @@
 import { motion } from "motion/react";
 import Image from "next/image";
-import { useState, useEffect, useMemo } from "react";
+import { useState } from "react";
 import ProfileButton from "./ProfileButton";
 
 interface ProfileCardProps {
@@ -61,9 +61,16 @@ export default function ProfileCard({
       >
         <div
           style={{ backfaceVisibility: "hidden" }}
-          className="absolute inset-0 items-end justify-end w-full h-full z-10"
+          className="inset-0 items-end justify-end w-full h-fit z-10"
         >
-          <div className="absolute right-[16px] bottom-[16px]">
+          <div className="p-[14px]">
+            <Image
+              src={src}
+              fill
+              alt="couple"
+              className="object-cover object-center rounded-3xl select-none touch-none"
+              draggable="false"
+            />
             <ProfileButton bgColor="#4E522D" onClick={handleFlip}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -76,29 +83,22 @@ export default function ProfileCard({
               </svg>
             </ProfileButton>
           </div>
-          <Image
-            src={src}
-            fill
-            alt="couple"
-            className="object-cover object-center rounded-3xl select-none touch-none"
-            draggable="false"
-          />
         </div>
         <div
-          className="absolute inset-0 w-[200px] h-[280px] p-[14px] leading-[1.1] tracking-tighter bg-[#4E522D] rounded-3xl z-[1]"
+          className="absolute inset-0 min-h-[280px] h-fit p-[14px] leading-[1.1] tracking-tighter bg-[#4E522D] rounded-3xl z-[1]"
           style={{
             backfaceVisibility: "hidden",
             transform: "rotateY(180deg)",
           }}
           draggable="false"
         >
-          <h3 className="font-[family-name:var(--font-instrument-serif)] text-[34px] ">
+          <h3 className="font-[family-name:var(--font-instrument-serif)] text-[34px] text-[#EEE7CA]">
             {name}
           </h3>
-          <p className="font-[family-name:var(--font-caveat)] text-[18px] mt-4">
+          <p className="font-[family-name:var(--font-caveat)] text-[18px] mt-4 text-[#EEE7CA]">
             {profil}
           </p>
-          <div className="absolute right-[16px] bottom-[16px]">
+          <div className="pt-[14px]">
             <ProfileButton bgColor="#EEE7CA" onClick={handleFlip}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"

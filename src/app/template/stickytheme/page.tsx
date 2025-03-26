@@ -13,9 +13,11 @@ export interface Customer {
   id: string;
   link_undangan: string;
   nama_pria: string;
+  nama_lengkap_pria: string;
   profil_pria: string;
   foto_pria: string;
   nama_wanita: string;
+  nama_lengkap_wanita: string;
   profil_wanita: string;
   foto_wanita: string;
   tgl_pernikahan: string;
@@ -144,14 +146,14 @@ const StickyTheme: React.FC<StickyThemeProps> = ({ customer }) => {
             src={fotoPriaUrl}
             hoverRotate={-4}
             className="absolute bottom-[54%] right-[32%] rotate-[-4deg]"
-            name={customer.nama_pria}
+            name={customer.nama_lengkap_pria}
             profil={customer.profil_pria}
           />
           <ProfileCard
             src={fotoWanitaUrl}
             hoverRotate={-4}
             className="absolute bottom-[36%] left-[32%] rotate-[-4deg]"
-            name={customer.nama_wanita}
+            name={customer.nama_lengkap_wanita}
             profil={customer.profil_wanita}
           />
           <Details

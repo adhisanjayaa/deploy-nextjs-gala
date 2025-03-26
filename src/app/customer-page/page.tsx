@@ -3,6 +3,8 @@
 import React, { useState, useEffect, KeyboardEvent, JSX } from "react";
 import PocketBase from "pocketbase";
 import { useRouter } from "next/navigation";
+import ReCAPTCHA from "react-google-recaptcha";
+
 import NavigationButtons from "../../components/NavigationButtons";
 import StepLink from "@/components/StepLink";
 import StepProfil from "@/components/StepProfil";
@@ -60,6 +62,8 @@ export default function CreateCustomerPage(): JSX.Element {
   const [template, setTemplate] = useState<string>("templateA");
 
   // Slide 6: Payment (tidak ada input tambahan)
+  const [captchaToken, setCaptchaToken] = useState<string>("");
+
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -78,6 +82,7 @@ export default function CreateCustomerPage(): JSX.Element {
       acara.link_acara.trim() !== ""
   );
   const isStep5Valid = tglPernikahan !== "" && isAcaraValid;
+  const isStep6Valid = captchaToken.trim() !== "";
 
   // Load Midtrans Snap script
   useEffect(() => {
@@ -93,32 +98,6 @@ export default function CreateCustomerPage(): JSX.Element {
       document.body.removeChild(script);
     };
   }, []);
-
-  // Fungsi untuk menambah input acara baru
-  const addAcara = (): void => {
-    setAcaraList([
-      ...acaraList,
-      { nama_acara: "", waktu_mulai: "", waktu_selesai: "", link_acara: "" },
-    ]);
-  };
-
-  // Fungsi untuk update data acara
-  const updateAcara = (
-    index: number,
-    field: keyof AcaraType,
-    value: string
-  ): void => {
-    const updated = acaraList.map((acara, i) =>
-      i === index ? { ...acara, [field]: value } : acara
-    );
-    setAcaraList(updated);
-  };
-
-  // Fungsi untuk menghapus acara
-  const removeAcara = (index: number): void => {
-    if (acaraList.length === 1) return;
-    setAcaraList(acaraList.filter((_, i) => i !== index));
-  };
 
   // Navigasi antar slide
   const handleNext = async (): Promise<void> => {
@@ -156,6 +135,10 @@ export default function CreateCustomerPage(): JSX.Element {
     }
     if (currentStep === 5 && !isStep5Valid) {
       setError("Pastikan tanggal pernikahan dan semua data acara telah diisi.");
+      return;
+    }
+    if (currentStep === 6 && !isStep6Valid) {
+      setError("Verifikasi captcha wajib.");
       return;
     }
     setError("");
@@ -323,9 +306,30 @@ export default function CreateCustomerPage(): JSX.Element {
           setTemplate={setTemplate}
         />
       )}
+      {currentStep === 6 && (
+        <div className="text-center">
+          <div className="mb-4">
+            <ReCAPTCHA
+              sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ""}
+              onChange={(token) => setCaptchaToken(token || "")}
+            />
+          </div>
+          <p className="mb-4 font-medium">
+            Klik "Pay Now" untuk menyelesaikan pembayaran.
+          </p>
+          <button
+            type="button"
+            onClick={handlePayment}
+            disabled={loading || !captchaToken}
+            className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded disabled:opacity-50"
+          >
+            {loading ? "Processing..." : "Pay Now"}
+          </button>
+        </div>
+      )}
       <NavigationButtons
         currentStep={currentStep}
-        totalSteps={5}
+        totalSteps={6}
         isNextDisabled={
           (currentStep === 1 && !linkUndangan.trim()) ||
           (currentStep === 2 &&
@@ -333,7 +337,16 @@ export default function CreateCustomerPage(): JSX.Element {
           (currentStep === 3 &&
             (!namaWanita.trim() || !profilWanita.trim() || !fotoWanitaFile)) ||
           (currentStep === 4 && !quote.trim()) ||
-          (currentStep === 5 && !tglPernikahan.trim())
+          (currentStep === 5 &&
+            (!tglPernikahan ||
+              !acaraList.every(
+                (acara) =>
+                  acara.nama_acara.trim() &&
+                  acara.waktu_mulai.trim() &&
+                  acara.waktu_selesai.trim() &&
+                  acara.link_acara.trim()
+              ))) ||
+          (currentStep === 6 && !captchaToken.trim())
         }
         onNext={handleNext}
         onPrev={handlePrev}

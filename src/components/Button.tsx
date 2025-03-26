@@ -1,5 +1,5 @@
 import { JSX } from "react";
-import { motion } from "motion/react";
+import { motion, Variants } from "motion/react";
 import { hoverClickVariants } from "@/utils/framerAnimations";
 
 export type ButtonVariant = "text" | "text-icon" | "icon";
